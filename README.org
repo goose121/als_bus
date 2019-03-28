@@ -1,0 +1,22 @@
+#+TITLE: als_bus
+
+This is a small Linux kernel module for interacting with ACPI-based
+ambient light sensors. Unlike the in-tree ~acpi_als~ module, ~als_bus~
+passes ACPI ~Notify~ events ~0x80~, ~0x81~, and ~0x82~ from the
+ambient light sensor (generated when the AML determines that a
+significant change to illuminance, colour temperature, or response has
+occured, respectively) to userspace via the ACPI netlink bus. The
+netlink packets' data field is zero, and their event type field is the
+event code received.
+
+It also exposes an ~als_bus~ node in the device node in ~sysfs~
+(usually found at ~/sys/bus/acpi/devices/ACPI0008:00/~), which
+contains the sub-entries ~ali~ and ~alr~, for reading the illuminance
+and the response table, respectively. The illuminance value is
+formatted as a base-10 integer and the response table is formatted
+~[[a, b], [c, d], ...]~ with the values in the same order as in
+~_ALR~, specified in section 9.3.5 of the ACPI specification. Note
+that at present, the ~_ALT~, ~_ALC~, and ~_ALP~ methods are not
+exposed in ~sysfs~; if they are exposed in the future, they will be
+accessible at ~alt~, ~alc~, and ~alp~ under the ~als_bus~ node. These
+nodes will only be present when the underlying methods exist.
